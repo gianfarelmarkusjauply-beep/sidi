@@ -11,16 +11,13 @@
         :root { --gold: #d4af37; --white: #ffffff; }
         body, html { margin: 0; padding: 0; font-family: 'Montserrat', sans-serif; scroll-behavior: smooth; background-color: #1a1a1a; color: #fff; overflow-x: hidden; }
 
-        /* --- COVER PAGE (OPTIMASI HP) --- */
+        /* --- COVER PAGE --- */
         #cover {
             height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center;
             text-align: center; position: fixed; width: 100%; z-index: 1000; padding: 20px; box-sizing: border-box;
             background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.7)), 
                               url('https://res.cloudinary.com/dtfbjdyui/image/upload/f_auto,q_auto/WhatsApp_Image_2026-03-26_at_08.12.14_zki72f'); 
-            background-size: cover; 
-            background-position: center 20%; /* Fokus ke wajah (20% dari atas) agar tidak terpotong di HP */
-            background-repeat: no-repeat;
-            color: white; transition: transform 0.8s cubic-bezier(0.77, 0, 0.175, 1);
+            background-size: cover; background-position: center; color: white; transition: transform 0.8s cubic-bezier(0.77, 0, 0.175, 1);
             image-rendering: -webkit-optimize-contrast;
         }
         #cover.hide { transform: translateY(-100%); }
@@ -29,14 +26,12 @@
         h1 { font-family: 'Cinzel', serif; font-size: 2.2rem; margin: 10px 0; text-shadow: 2px 2px 10px black; }
         .btn-open { margin-top: 25px; padding: 12px 35px; background-color: var(--gold); color: white; border: none; border-radius: 30px; cursor: pointer; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
 
-        /* --- ISI UNDANGAN --- */
+        /* --- ISI UNDANGAN (GLASSMORPHISM) --- */
         .main-wrapper {
             position: relative; min-height: 100vh;
             background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
                               url('https://res.cloudinary.com/dtfbjdyui/image/upload/f_auto,q_auto/WhatsApp_Image_2026-03-26_at_08.12.14_zki72f');
-            background-size: cover; 
-            background-position: center; 
-            background-attachment: scroll; /* Lebih stabil untuk browser HP daripada 'fixed' */
+            background-size: cover; background-position: center; background-attachment: fixed;
             padding: 80px 20px;
         }
         .main-content { max-width: 600px; margin: auto; text-align: center; }
@@ -102,7 +97,9 @@
 
     <div class="main-wrapper">
         <div class="main-content">
+            
             <div class="ornament-salib" style="font-size: 1.8rem;"><i class="fas fa-cross"></i></div>
+            
             <div class="bible-verse">
                 "Hendaklah engkau setia sampai mati, dan Aku akan mengaruniakan kepadamu mahkota kehidupan." <br>
                 <strong style="color: var(--gold); font-size: 0.85rem; margin-top: 10px; display: block;">- Wahyu 2:10 -</strong>
@@ -131,12 +128,13 @@
                 <div class="wish-form">
                     <input type="text" id="u-nama" placeholder="Nama Anda">
                     <textarea id="u-pesan" placeholder="Tuliskan doa atau ucapan Anda..."></textarea>
-                    <button class="btn-send" id="btnKirim" onclick="tambahUcapan()">Kirim Ucapan</button>
+                    <button class="btn-send" onclick="tambahUcapan()">Kirim Ucapan</button>
                 </div>
                 <div class="wish-display">
                     <div id="wish-slider" style="transition: transform 0.6s ease;">
                         <div class="wish-item">
-                            <strong style="color:var(--gold)">Memuat ucapan...</strong>
+                            <strong style="color:var(--gold)">Keluarga Bpk. Anthonius Jauply</strong>
+                            <small>Selamat untuk Imanuel, teruslah bertumbuh dalam iman dan menjadi berkat.</small>
                         </div>
                     </div>
                 </div>
@@ -155,8 +153,7 @@
     </div>
 
     <script>
-        const API_URL = "https://sheetdb.io/api/v1/gw2u1mlw8i7wm";
-
+        // ADMIN SCRIPT (Akses: buka index.html#admin)
         if (window.location.hash === "#admin") document.getElementById('adminPanel').style.display = 'flex';
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('to')) document.getElementById('guestName').innerText = urlParams.get('to');
@@ -173,58 +170,16 @@
             alert("Link WhatsApp telah disalin!");
         }
 
-        async function muatUcapan() {
-            try {
-                const response = await fetch(API_URL);
-                const data = await response.json();
-                const slider = document.getElementById('wish-slider');
-                slider.innerHTML = ""; 
-
-                if(!data || data.length === 0) {
-                    slider.innerHTML = `<div class="wish-item"><strong style="color:var(--gold)">Belum ada ucapan</strong><small>Jadilah yang pertama memberikan doa.</small></div>`;
-                    return;
-                }
-
-                data.reverse().forEach(row => {
-                    let item = document.createElement('div');
-                    item.className = 'wish-item';
-                    item.innerHTML = `<strong style="color:var(--gold)">${row.nama}</strong><small>${row.pesan}</small>`;
-                    slider.appendChild(item);
-                });
-            } catch (e) {
-                console.log("Error muat data");
-            }
-        }
-
-        async function tambahUcapan() {
+        // UCAPAN SLIDE SCRIPT
+        function tambahUcapan() {
             let n = document.getElementById('u-nama').value;
             let p = document.getElementById('u-pesan').value;
-            let btn = document.getElementById('btnKirim');
-
             if(!n || !p) return alert("Mohon isi nama dan ucapan");
-
-            btn.disabled = true;
-            btn.innerText = "Mengirim...";
-
-            try {
-                const res = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ data: [{ nama: n, pesan: p }] })
-                });
-                
-                if(res.ok) {
-                    document.getElementById('u-nama').value = "";
-                    document.getElementById('u-pesan').value = "";
-                    alert("Ucapan terkirim!");
-                    muatUcapan();
-                }
-            } catch (e) {
-                alert("Gagal mengirim, pastikan Google Sheets Anda sudah di-set ke 'Editor' untuk umum.");
-            } finally {
-                btn.disabled = false;
-                btn.innerText = "Kirim Ucapan";
-            }
+            let item = document.createElement('div');
+            item.className = 'wish-item';
+            item.innerHTML = `<strong style="color:var(--gold)">${n}</strong><small>${p}</small>`;
+            document.getElementById('wish-slider').prepend(item);
+            document.getElementById('u-nama').value = ""; document.getElementById('u-pesan').value = "";
         }
 
         let slideIdx = 0;
@@ -239,10 +194,9 @@
         function openInvitation() {
             document.getElementById('cover').classList.add('hide');
             document.body.style.overflow = "auto";
-            document.getElementById("myAudio").play().catch(e => console.log("Audio Playblocked"));
+            document.getElementById("myAudio").play().catch(e => console.log("Audio Error"));
             document.getElementById("musicBtn").style.display = "flex";
             document.getElementById('adminPanel').style.display = 'none';
-            muatUcapan(); 
         }
 
         function toggleMusic() {
