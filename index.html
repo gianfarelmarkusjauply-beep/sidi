@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Peneguhan Sidi - Imanuel Christo Jauply</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Great+Vibes&family=Montserrat:wght@300;400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        :root { --gold: #d4af37; --white: #ffffff; }
+        body, html { margin: 0; padding: 0; font-family: 'Montserrat', sans-serif; scroll-behavior: smooth; background-color: #1a1a1a; color: #fff; overflow-x: hidden; }
+
+        /* --- COVER PAGE --- */
+        #cover {
+            height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; position: fixed; width: 100%; z-index: 1000; padding: 20px; box-sizing: border-box;
+            background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.7)), 
+                              url('https://res.cloudinary.com/dtfbjdyui/image/upload/f_auto,q_auto/WhatsApp_Image_2026-03-26_at_08.12.14_zki72f'); 
+            background-size: cover; background-position: center; color: white; transition: transform 0.8s cubic-bezier(0.77, 0, 0.175, 1);
+            image-rendering: -webkit-optimize-contrast;
+        }
+        #cover.hide { transform: translateY(-100%); }
+
+        .guest-box { margin-top: 15px; background: rgba(0, 0, 0, 0.6); padding: 15px 25px; border-radius: 10px; border: 1px solid var(--gold); backdrop-filter: blur(5px); min-width: 250px; }
+        h1 { font-family: 'Cinzel', serif; font-size: 2.2rem; margin: 10px 0; text-shadow: 2px 2px 10px black; }
+        .btn-open { margin-top: 25px; padding: 12px 35px; background-color: var(--gold); color: white; border: none; border-radius: 30px; cursor: pointer; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+
+        /* --- ISI UNDANGAN (GLASSMORPHISM) --- */
+        .main-wrapper {
+            position: relative; min-height: 100vh;
+            background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
+                              url('https://res.cloudinary.com/dtfbjdyui/image/upload/f_auto,q_auto/WhatsApp_Image_2026-03-26_at_08.12.14_zki72f');
+            background-size: cover; background-position: center; background-attachment: fixed;
+            padding: 80px 20px;
+        }
+        .main-content { max-width: 600px; margin: auto; text-align: center; }
+        
+        .ornament-salib { color: var(--gold); font-size: 2.5rem; margin-bottom: 15px; filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.6)); }
+
+        .bible-verse {
+            font-style: italic; font-size: 0.9rem; margin: 25px 0; padding: 25px;
+            border-left: 3px solid var(--gold); border-right: 3px solid var(--gold);
+            background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(10px);
+            border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        h2 { font-family: 'Great Vibes', cursive; font-size: 3.5rem; color: var(--gold); margin: 15px 0; }
+
+        .info-card, .wish-section {
+            padding: 30px; border-radius: 20px; background: rgba(0, 0, 0, 0.6); 
+            backdrop-filter: blur(15px); border: 1px solid rgba(212, 175, 55, 0.4);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4); margin-bottom: 30px;
+        }
+
+        /* FITUR UCAPAN */
+        .wish-form input, .wish-form textarea { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.1); color: white; font-family: inherit; box-sizing: border-box; }
+        .btn-send { background: var(--gold); color: white; border: none; padding: 12px 25px; border-radius: 25px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.3s; }
+        .btn-send:hover { background: #b8952e; }
+        
+        .wish-display { height: 110px; overflow: hidden; position: relative; background: rgba(255,255,255,0.05); border-radius: 10px; margin-top: 20px; }
+        .wish-item { padding: 15px; height: 110px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
+
+        /* ADMIN & MUSIC */
+        #adminPanel { position: fixed; top: 10px; left: 10px; background: white; padding: 15px; border-radius: 10px; z-index: 2000; box-shadow: 0 5px 20px rgba(0,0,0,0.5); display: none; flex-direction: column; gap: 8px; color: #333; width: 220px; }
+        #adminPanel input { padding: 8px; border: 1px solid #ccc; border-radius: 5px; }
+        .music-control { position: fixed; bottom: 25px; right: 25px; z-index: 2000; background: var(--gold); color: white; width: 50px; height: 50px; border-radius: 50%; display: none; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
+
+        @media (max-width: 600px) { h1 { font-size: 1.8rem; } h2 { font-size: 2.8rem; } .main-wrapper { padding: 60px 15px; } }
+    </style>
+</head>
+<body style="overflow: hidden;">
+
+    <audio id="myAudio" loop><source src="Pikul salib.mp3" type="audio/mpeg"></audio>
+
+    <div id="adminPanel">
+        <label style="font-weight: bold; font-size: 0.8rem;">Editor Nama Tamu</label>
+        <input type="text" id="inputNama" placeholder="Nama Tamu...">
+        <button onclick="updatePreview()" style="background:#28a745; color:white; border:none; padding:8px; cursor:pointer; font-weight:bold; border-radius:5px;">Update</button>
+        <button onclick="copyLink()" style="background:#007bff; color:white; border:none; padding:8px; cursor:pointer; font-weight:bold; border-radius:5px;">Salin Link WA</button>
+    </div>
+
+    <div id="musicBtn" class="music-control" onclick="toggleMusic()"><i id="musicIcon" class="fas fa-music"></i></div>
+
+    <div id="cover">
+        <div class="ornament-salib"><i class="fas fa-cross"></i></div>
+        <p style="letter-spacing: 4px; text-transform: uppercase; font-size: 0.75rem;">Undangan Peneguhan Sidi</p>
+        <h1>Imanuel Christo Jauply</h1>
+        
+        <div class="guest-box">
+            <p style="margin: 0 0 5px 0; font-size: 0.8rem; color: #ccc;">Kepada Yth. Bapak/Ibu/Saudara/i:</p>
+            <h3 id="guestName" style="margin: 0; color: white; font-size: 1.2rem; font-family: 'Cinzel', serif;">Nama Tamu</h3>
+        </div>
+
+        <button class="btn-open" onclick="openInvitation()"><i class="fas fa-envelope-open-text"></i> Buka Undangan</button>
+    </div>
+
+    <div class="main-wrapper">
+        <div class="main-content">
+            
+            <div class="ornament-salib" style="font-size: 1.8rem;"><i class="fas fa-cross"></i></div>
+            
+            <div class="bible-verse">
+                "Hendaklah engkau setia sampai mati, dan Aku akan mengaruniakan kepadamu mahkota kehidupan." <br>
+                <strong style="color: var(--gold); font-size: 0.85rem; margin-top: 10px; display: block;">- Wahyu 2:10 -</strong>
+            </div>
+
+            <p style="font-size: 0.95rem; line-height: 1.8; margin: 30px 0;">
+                Shalom, dengan penuh syukur atas kasih setia Tuhan, kami mengundang Bapak/Ibu/Saudara/i untuk hadir dalam 
+                <strong>Syukuran Peneguhan Sidi</strong> anak kami:
+            </p>
+
+            <h2>Imanuel Christo Jauply</h2>
+
+            <div style="color: var(--gold); margin: 20px 0; font-size: 1.2rem;"><i class="fas fa-dove"></i></div>
+
+            <div class="info-card">
+                <h3 style="font-family:'Cinzel'; color:var(--gold); margin-bottom: 20px; letter-spacing: 2px;">Waktu & Tempat</h3>
+                <p style="font-size: 1.1rem;"><strong><i class="far fa-calendar-check"></i> Minggu, 29 Maret 2026</strong></p>
+                <p><i class="far fa-clock"></i> 13.00 WIT - Selesai</p>
+                <hr style="border:0; border-top:1px solid rgba(255,255,255,0.2); margin:20px 0;">
+                <p><i class="fas fa-map-marker-alt" style="color: var(--gold);"></i> <strong>Flet Brimob Tantui Atas</strong><br>
+                Rumah Keluarga Bpk. Anthonius Jauply</p>
+            </div>
+
+            <div class="wish-section">
+                <h3 style="font-family:'Cinzel'; color:var(--gold); font-size: 1.1rem; margin-bottom: 20px;">Ucapan & Doa Restu</h3>
+                <div class="wish-form">
+                    <input type="text" id="u-nama" placeholder="Nama Anda">
+                    <textarea id="u-pesan" placeholder="Tuliskan doa atau ucapan Anda..."></textarea>
+                    <button class="btn-send" onclick="tambahUcapan()">Kirim Ucapan</button>
+                </div>
+                <div class="wish-display">
+                    <div id="wish-slider" style="transition: transform 0.6s ease;">
+                        <div class="wish-item">
+                            <strong style="color:var(--gold)">Keluarga Bpk. Anthonius Jauply</strong>
+                            <small>Selamat untuk Imanuel, teruslah bertumbuh dalam iman dan menjadi berkat.</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer" style="padding-bottom: 60px;">
+                <div class="ornament-salib" style="font-size: 1.2rem; margin-bottom: 20px;"><i class="fas fa-cross"></i></div>
+                <p style="font-size: 1rem;">Atas kehadiran dan doa restunya, kami ucapkan terima kasih.</p>
+                <p style="font-weight:bold; color:var(--gold); font-size: 1.1rem;">Tuhan Yesus Memberkati.</p>
+                <div style="margin-top:40px;">
+                    <p style="font-size:0.75rem; letter-spacing:3px; text-transform:uppercase; color: #ccc;">Kami yang mengundang,</p>
+                    <p style="font-size: 1.2rem; margin-top: 10px;"><strong>Keluarga Bpk. Anthonius Jauply</strong></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ADMIN SCRIPT (Akses: buka index.html#admin)
+        if (window.location.hash === "#admin") document.getElementById('adminPanel').style.display = 'flex';
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('to')) document.getElementById('guestName').innerText = urlParams.get('to');
+
+        function updatePreview() {
+            let n = document.getElementById('inputNama').value;
+            if(n) document.getElementById('guestName').innerText = n;
+        }
+
+        function copyLink() {
+            let n = document.getElementById('inputNama').value;
+            let baseUrl = window.location.href.split('#')[0].split('?')[0];
+            navigator.clipboard.writeText(baseUrl + "?to=" + encodeURIComponent(n));
+            alert("Link WhatsApp telah disalin!");
+        }
+
+        // UCAPAN SLIDE SCRIPT
+        function tambahUcapan() {
+            let n = document.getElementById('u-nama').value;
+            let p = document.getElementById('u-pesan').value;
+            if(!n || !p) return alert("Mohon isi nama dan ucapan");
+            let item = document.createElement('div');
+            item.className = 'wish-item';
+            item.innerHTML = `<strong style="color:var(--gold)">${n}</strong><small>${p}</small>`;
+            document.getElementById('wish-slider').prepend(item);
+            document.getElementById('u-nama').value = ""; document.getElementById('u-pesan').value = "";
+        }
+
+        let slideIdx = 0;
+        setInterval(() => {
+            let items = document.getElementsByClassName('wish-item');
+            if(items.length > 1) {
+                slideIdx = (slideIdx + 1) % items.length;
+                document.getElementById('wish-slider').style.transform = `translateY(-${slideIdx * 110}px)`;
+            }
+        }, 4000);
+
+        function openInvitation() {
+            document.getElementById('cover').classList.add('hide');
+            document.body.style.overflow = "auto";
+            document.getElementById("myAudio").play().catch(e => console.log("Audio Error"));
+            document.getElementById("musicBtn").style.display = "flex";
+            document.getElementById('adminPanel').style.display = 'none';
+        }
+
+        function toggleMusic() {
+            let a = document.getElementById("myAudio");
+            let i = document.getElementById("musicIcon");
+            if (a.paused) { a.play(); i.className = "fas fa-music"; } 
+            else { a.pause(); i.className = "fas fa-pause"; }
+        }
+    </script>
+</body>
+</html>
